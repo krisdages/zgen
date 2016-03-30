@@ -26,6 +26,16 @@ fi
 if [[ -n "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
     ZGEN_COMPINIT_DIR_FLAG="-d ${(q-)ZGEN_CUSTOM_COMPDUMP}"
     ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG} ${ZGEN_COMPINIT_FLAGS}"
+else
+    #Create distinct zcompdump for version and host, from oh-my-zsh: https://goo.gl/rDapX5
+    #Use host-local zdotdir if available.
+    local shortHost
+    if [ -n "$commands[scutil]" ]; then
+        shortHost=$(scutil --get ComputerName)
+    else
+        shortHost=${HOST/.*/}
+    fi
+    ZGEN_COMPINIT_DIR_FLAG="${ZDOTDIR:-${ZDOTDIR_LOCAL:-${HOME}}}/.zcompdump-${shortHost}-${ZSH_VERSION}"
 fi
 
 if [[ -z "${ZGEN_LOADED}" ]]; then
