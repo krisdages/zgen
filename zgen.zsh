@@ -19,7 +19,8 @@ fi
 # The user can explicitly disable Zgen attempting to invoke `compinit`, or it
 # will be automatically disabled if `compinit` appears to have already been
 # invoked.
-if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
+#if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
+if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" ]]; then
     ZGEN_AUTOLOAD_COMPINIT=1
 fi
 
@@ -29,13 +30,13 @@ if [[ -n "${ZGEN_CUSTOM_COMPDUMP}" ]]; then
 else
     #Create distinct zcompdump for version and host, from oh-my-zsh: https://goo.gl/rDapX5
     #Use host-local zdotdir if available.
-    local shortHost
     if [ -n "$commands[scutil]" ]; then
-        shortHost=$(scutil --get ComputerName)
+        local shortHost=$(scutil --get ComputerName)
     else
-        shortHost=${HOST/.*/}
+        local shortHost=${HOST/.*/}
     fi
-    ZGEN_COMPINIT_DIR_FLAG="${ZDOTDIR:-${ZDOTDIR_LOCAL:-${HOME}}}/.zcompdump-${shortHost}-${ZSH_VERSION}"
+    ZGEN_COMPINIT_DIR_FLAG="-d ${ZDOTDIR_LOCAL:-${ZDOTDIR:-${HOME}}}/.zcompdump-${shortHost}-${ZSH_VERSION}"
+    ZGEN_COMPINIT_FLAGS="${ZGEN_COMPINIT_DIR_FLAG}"
 fi
 
 if [[ -z "${ZGEN_LOADED}" ]]; then
@@ -260,7 +261,7 @@ zgen-save() {
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         -zginit ""
         -zginit 'autoload -Uz compinit && \'
-        -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"
+        -zginit '   compinit -C '"${ZGEN_COMPINIT_DIR_FLAG}"' && autoload -Uz bashcompinit && bashcompinit'
     fi
 
     # Check for file changes
@@ -308,9 +309,9 @@ zgen-apply() {
 
     if [[ ${ZGEN_AUTOLOAD_COMPINIT} == 1 ]]; then
         -zgpute "Initializing completions ..."
-
         autoload -Uz compinit && \
-            compinit $ZGEN_COMPINIT_FLAGS
+            compinit $ZGEN_COMPINIT_FLAGS && \
+            autoload -Uz bashcompinit && bashcompinit
     fi
 }
 
