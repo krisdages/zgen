@@ -19,8 +19,7 @@ fi
 # The user can explicitly disable Zgen attempting to invoke `compinit`, or it
 # will be automatically disabled if `compinit` appears to have already been
 # invoked.
-#if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
-if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" ]]; then
+if [[ -z "${ZGEN_AUTOLOAD_COMPINIT}" && -z "${(t)_comps}" ]]; then
     ZGEN_AUTOLOAD_COMPINIT=1
 fi
 
